@@ -10,7 +10,6 @@ enum AuthStatus {
 
 @Observable
 final class AuthStore {
-    var status: AuthStatus = .authenticated
-    var userId: String? = "phase-10-demo"
+    var status: AuthStatus = .unauthenticated
+    var userId: String?
 }
-

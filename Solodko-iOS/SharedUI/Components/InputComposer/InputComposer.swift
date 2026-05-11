@@ -6,6 +6,8 @@ struct InputComposer: View {
     var onVoiceTap: () -> Void
     var onCameraTap: () -> Void
     var onBarcodeTap: () -> Void
+    var isVoiceInputAvailable = true
+    var isCameraInputAvailable = true
 
     @FocusState private var focused: Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -19,6 +21,18 @@ struct InputComposer: View {
                     .accessibilityLabel(SolodkoCopy.Home.offline)
             }
 
+            if !isCameraInputAvailable {
+                PermissionRecoveryInline(kind: .camera) {
+                    focused = true
+                }
+            }
+
+            if !isVoiceInputAvailable {
+                PermissionRecoveryInline(kind: .microphone) {
+                    focused = true
+                }
+            }
+
             HStack(spacing: SolodkoTheme.spacing.sm) {
                 TextField(SolodkoCopy.Home.textPlaceholder, text: $controller.rawInput)
                     .font(SolodkoTheme.typography.body)
@@ -29,11 +43,15 @@ struct InputComposer: View {
                     .frame(minHeight: SolodkoTheme.spacing.minTouchTarget)
                     .accessibilitySortPriority(2)
 
-                composerButton(systemName: "waveform", label: SolodkoCopy.Accessibility.voiceInput, hint: SolodkoCopy.Accessibility.voiceInputHint, action: onVoiceTap)
-                    .accessibilitySortPriority(1)
+                if isVoiceInputAvailable {
+                    composerButton(systemName: "waveform", label: SolodkoCopy.Accessibility.voiceInput, hint: SolodkoCopy.Accessibility.voiceInputHint, action: onVoiceTap)
+                        .accessibilitySortPriority(1)
+                }
 
-                composerButton(systemName: "camera", label: SolodkoCopy.Accessibility.cameraInput, hint: SolodkoCopy.Accessibility.cameraInputHint, action: onCameraTap)
-                    .accessibilitySortPriority(0.9)
+                if isCameraInputAvailable {
+                    composerButton(systemName: "camera", label: SolodkoCopy.Accessibility.cameraInput, hint: SolodkoCopy.Accessibility.cameraInputHint, action: onCameraTap)
+                        .accessibilitySortPriority(0.9)
+                }
 
                 composerButton(systemName: "barcode.viewfinder", label: SolodkoCopy.Accessibility.barcodeScan, hint: SolodkoCopy.Accessibility.barcodeScanHint, action: onBarcodeTap)
                     .accessibilitySortPriority(0.8)

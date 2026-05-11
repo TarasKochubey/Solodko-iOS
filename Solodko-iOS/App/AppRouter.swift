@@ -8,10 +8,9 @@ struct AppRouter: View {
         case .loading:
             SplashView()
         case .unauthenticated, .error:
-            AuthView()
+            PreAppFlowView()
         case .authenticated:
             MainTabShell()
         }
     }
 }
-
