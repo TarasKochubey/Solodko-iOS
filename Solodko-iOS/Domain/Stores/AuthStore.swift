@@ -1,0 +1,16 @@
+import Observation
+import Foundation
+
+enum AuthStatus {
+    case loading
+    case unauthenticated
+    case authenticated
+    case error
+}
+
+@Observable
+final class AuthStore {
+    var status: AuthStatus = .authenticated
+    var userId: String? = "phase-10-demo"
+}
+

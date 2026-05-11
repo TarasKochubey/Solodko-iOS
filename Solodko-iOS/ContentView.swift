@@ -9,16 +9,16 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
+        FoundationPreviewGallery()
     }
 }
 
 #Preview {
     ContentView()
+        .environment(AuthStore())
+        .environment(PreferencesStore())
+        .environment(SubscriptionStore())
+        .environment(FoodMemoryStore())
+        .environment(RecurringMealsStore())
+        .environment(LogStore())
 }
