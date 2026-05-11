@@ -68,7 +68,7 @@ final class MealInputController {
 
         Task { @MainActor in
             try? await Task.sleep(for: .seconds(reduceMotion ? 0.15 : 0.65))
-            completeFakeResolution(for: trimmed)
+            completeFakeResolution(for: trimmed, reduceMotion: reduceMotion)
         }
     }
 
@@ -87,10 +87,11 @@ final class MealInputController {
                 carbGrams: 24,
                 carbGramsPer100g: 8,
                 portion: PortionObject(grams: 300),
-                source: .aiEstimated
+                source: .aiEstimated,
+                inlineSuggestion: SolodkoCopy.Home.estimatedHint
             )
             clarificationContext = nil
-            status = .resultReady
+            setStatus(.resultReady, reduceMotion: reduceMotion)
         }
     }
 
@@ -111,13 +112,14 @@ final class MealInputController {
                 carbGramsPer100g: 21,
                 kcal: 340,
                 portion: PortionObject(grams: 250),
-                source: .aiEstimated
+                source: .aiEstimated,
+                inlineSuggestion: SolodkoCopy.Home.estimatedHint
             )
-            status = .resultReady
+            setStatus(.resultReady, reduceMotion: reduceMotion)
         }
     }
 
-    func startBarcodeDemo() {
+    func startBarcodeDemo(reduceMotion: Bool) {
         inputMethod = .barcode
         activeMealCard = MealObject(
             foodName: "Packaged kefir",
@@ -126,7 +128,7 @@ final class MealInputController {
             portion: PortionObject(grams: 300),
             source: .exact
         )
-        status = .resultReady
+        setStatus(.resultReady, reduceMotion: reduceMotion)
     }
 
     func useRecurringMeal(_ meal: RecurringMeal) {
@@ -175,22 +177,29 @@ final class MealInputController {
         isLoggingResult = false
     }
 
-    private func completeFakeResolution(for text: String) {
+    private func completeFakeResolution(for text: String, reduceMotion: Bool) {
         if text.localizedCaseInsensitiveContains("borscht") {
             clarificationContext = ClarificationContext(question: SolodkoCopy.Home.clarification, resolvedFoodId: "borscht", attemptCount: 0)
-            status = .clarifying
+            setStatus(.clarifying, reduceMotion: reduceMotion)
         } else if text.localizedCaseInsensitiveContains("unknown") {
             activeMealCard = MealInputController.lowConfidenceResult
-            status = .lowConfidence
+            setStatus(.lowConfidence, reduceMotion: reduceMotion)
         } else {
             activeMealCard = MealObject(
                 foodName: text.capitalized,
                 carbGrams: 42,
                 carbGramsPer100g: 18,
                 portion: PortionObject(grams: 230),
-                source: .aiEstimated
+                source: .aiEstimated,
+                inlineSuggestion: SolodkoCopy.Home.estimatedHint
             )
-            status = .resultReady
+            setStatus(.resultReady, reduceMotion: reduceMotion)
+        }
+    }
+
+    private func setStatus(_ newStatus: MealInputStatus, reduceMotion: Bool) {
+        withAnimation(reduceMotion ? .easeOut(duration: SolodkoTheme.motion.fast) : .solodkoSpring) {
+            status = newStatus
         }
     }
 
@@ -200,7 +209,8 @@ final class MealInputController {
         carbGramsPer100g: 19,
         kcal: 420,
         portion: PortionObject(grams: 240),
-        source: .aiEstimated
+        source: .aiEstimated,
+        inlineSuggestion: SolodkoCopy.Home.estimatedHint
     )
 
     static let lowConfidenceResult = MealObject(
@@ -219,4 +229,3 @@ final class MealInputController {
         source: .offline
     )
 }
-

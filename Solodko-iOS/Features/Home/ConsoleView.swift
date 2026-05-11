@@ -6,7 +6,7 @@ struct ConsoleView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        VStack(spacing: SolodkoTheme.spacing.lg) {
+        VStack(spacing: SolodkoTheme.spacing.md) {
             AIOrb(state: controller.orbState, onTap: {
                 if controller.status == .idle {
                     withAnimation(reduceMotion ? .easeOut(duration: SolodkoTheme.motion.fast) : .solodkoSpring) {
@@ -27,10 +27,10 @@ struct ConsoleView: View {
                 },
                 onVoiceTap: { controller.startVoiceDemo() },
                 onCameraTap: { controller.startPhotoDemo(reduceMotion: reduceMotion) },
-                onBarcodeTap: { controller.startBarcodeDemo() }
+                onBarcodeTap: { controller.startBarcodeDemo(reduceMotion: reduceMotion) }
             )
             .accessibilitySortPriority(2)
         }
+        .padding(.top, SolodkoTheme.spacing.sm)
     }
 }
-

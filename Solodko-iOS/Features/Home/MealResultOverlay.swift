@@ -26,7 +26,7 @@ struct MealResultOverlay: View {
                 .opacity(controller.isLoggingResult ? 0 : 1)
                 .accessibilityFocused($cardFocused)
                 .padding(.horizontal, SolodkoTheme.spacing.xl)
-                .padding(.bottom, SolodkoTheme.spacing.fourXL * 2.8)
+                .padding(.bottom, SolodkoTheme.spacing.fourXL * 2 + SolodkoTheme.spacing.twoXL)
             }
             .transition(reduceMotion ? .opacity : .identity)
             .onAppear { cardFocused = true }
@@ -51,4 +51,3 @@ struct MealResultOverlay: View {
         }
     }
 }
-

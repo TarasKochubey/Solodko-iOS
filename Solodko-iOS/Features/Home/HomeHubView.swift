@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HomeHubView: View {
     @Environment(LogStore.self) private var logStore
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var controller = MealInputController()
     @Namespace private var mealNamespace
 
@@ -26,6 +27,7 @@ struct HomeHubView: View {
                     onLogged: { meal in logStore.log(meal) }
                 )
                 .zIndex(2)
+                .transition(reduceMotion ? .opacity : .identity)
             }
 
             if controller.status == .clarifying {
@@ -35,4 +37,3 @@ struct HomeHubView: View {
         }
     }
 }
-

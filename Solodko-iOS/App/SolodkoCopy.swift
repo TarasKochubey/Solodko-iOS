@@ -17,9 +17,10 @@ enum SolodkoCopy {
     enum Home {
         static let recurringTitle = String(localized: "Usually around now")
         static let recurringEmpty = String(localized: "Your familiar meals will appear here.")
-        static let textPlaceholder = String(localized: "Type food or portion")
+        static let textPlaceholder = String(localized: "Describe your meal")
         static let clarification = String(localized: "How much?")
         static let offline = String(localized: "Offline - using saved foods")
+        static let estimatedHint = String(localized: "A soft estimate. Adjust the portion if needed.")
     }
 
     enum Actions {
@@ -36,7 +37,7 @@ enum SolodkoCopy {
 
     enum Badges {
         static let yourFood = String(localized: "Your food")
-        static let estimated = String(localized: "Estimated - adjust if needed")
+        static let estimated = String(localized: "Estimated")
         static let notFound = String(localized: "Not found")
         static let offline = String(localized: "Offline")
     }
@@ -58,4 +59,3 @@ enum SolodkoCopy {
         static let listening = String(localized: "Listening")
     }
 }
-

@@ -8,6 +8,7 @@ struct InputComposer: View {
     var onBarcodeTap: () -> Void
 
     @FocusState private var focused: Bool
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         VStack(alignment: .leading, spacing: SolodkoTheme.spacing.sm) {
@@ -43,15 +44,23 @@ struct InputComposer: View {
             .glassMaterial(
                 radius: SolodkoTheme.radii.pill,
                 surface: SolodkoTheme.colors.surface.glassActive,
-                active: focused || controller.status == .listening
+                active: isActive
             )
             .solodkoShadow(SolodkoTheme.shadows.secondary)
+            .scaleEffect(isActive && !reduceMotion ? 1.01 : 1)
+            .opacity(controller.status == .processing ? 0.82 : 1)
         }
         .onChange(of: focused) { _, isFocused in
             if isFocused && controller.status == .idle {
                 controller.beginListening()
             }
         }
+        .animation(reduceMotion ? .easeOut(duration: SolodkoTheme.motion.fast) : .solodkoSpring, value: isActive)
+        .animation(reduceMotion ? .easeOut(duration: SolodkoTheme.motion.fast) : .solodkoSpring, value: controller.status)
+    }
+
+    private var isActive: Bool {
+        focused || controller.status == .listening || controller.status == .clarifying
     }
 
     private func submitCurrentText() {
@@ -71,4 +80,3 @@ struct InputComposer: View {
         .accessibilityHint(hint)
     }
 }
-

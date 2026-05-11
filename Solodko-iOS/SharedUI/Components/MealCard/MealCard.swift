@@ -41,8 +41,8 @@ struct MealCard: View {
     private var fullLayout: some View {
         VStack(alignment: .leading, spacing: SolodkoTheme.spacing.lg) {
             header
-            values
             suggestion
+            values
             actions
         }
     }
@@ -50,6 +50,7 @@ struct MealCard: View {
     private var compactLayout: some View {
         VStack(alignment: .leading, spacing: SolodkoTheme.spacing.md) {
             header
+            suggestion
             values
             actions
         }
@@ -76,31 +77,50 @@ struct MealCard: View {
     }
 
     private var values: some View {
-        HStack(alignment: .firstTextBaseline, spacing: SolodkoTheme.spacing.xl) {
-            VStack(alignment: .leading, spacing: SolodkoTheme.spacing.xs) {
-                Text("\(Int(meal.carbGrams))g")
-                    .font(SolodkoTheme.typography.carbValue)
-                    .foregroundStyle(SolodkoTheme.colors.text.primary)
-                    .minimumScaleFactor(0.8)
-                    .lineLimit(1)
-                    .accessibilityLabel("\(Int(meal.carbGrams)) grams of carbohydrates")
-                Text("Carbs")
-                    .font(SolodkoTheme.typography.microcopy)
-                    .foregroundStyle(SolodkoTheme.colors.text.secondary)
-            }
-
-            if let kcal = meal.kcal {
-                VStack(alignment: .leading, spacing: SolodkoTheme.spacing.xs) {
-                    Text("\(Int(kcal))")
-                        .font(SolodkoTheme.typography.screenTitle)
-                        .foregroundStyle(SolodkoTheme.colors.text.primary)
-                    Text("kcal")
-                        .font(SolodkoTheme.typography.microcopy)
-                        .foregroundStyle(SolodkoTheme.colors.text.secondary)
-                }
+        ViewThatFits(in: .horizontal) {
+            valueRow
+            VStack(alignment: .leading, spacing: SolodkoTheme.spacing.md) {
+                carbValue
+                kcalValue
             }
         }
         .opacity(showContent ? 1 : 0)
+    }
+
+    private var valueRow: some View {
+        HStack(alignment: .firstTextBaseline, spacing: SolodkoTheme.spacing.xl) {
+            carbValue
+            kcalValue
+        }
+    }
+
+    private var carbValue: some View {
+        VStack(alignment: .leading, spacing: SolodkoTheme.spacing.xs) {
+            Text("\(Int(meal.carbGrams))g")
+                .font(SolodkoTheme.typography.carbValue)
+                .foregroundStyle(SolodkoTheme.colors.text.primary)
+                .minimumScaleFactor(0.8)
+                .lineLimit(1)
+                .accessibilityLabel("\(Int(meal.carbGrams)) grams of carbohydrates")
+            Text("Carbs")
+                .font(SolodkoTheme.typography.microcopy)
+                .foregroundStyle(SolodkoTheme.colors.text.secondary)
+        }
+    }
+
+    @ViewBuilder
+    private var kcalValue: some View {
+        if let kcal = meal.kcal {
+            VStack(alignment: .leading, spacing: SolodkoTheme.spacing.xs) {
+                Text("\(Int(kcal))")
+                    .font(SolodkoTheme.typography.screenTitle)
+                    .foregroundStyle(SolodkoTheme.colors.text.secondary)
+                    .lineLimit(1)
+                Text("kcal")
+                    .font(SolodkoTheme.typography.microcopy)
+                    .foregroundStyle(SolodkoTheme.colors.text.secondary)
+            }
+        }
     }
 
     @ViewBuilder
@@ -140,4 +160,3 @@ struct MealCard: View {
         "\(meal.foodName), \(Int(meal.carbGrams)) grams of carbohydrates, \(meal.portion.displayText), \(cardState.accessibilityLabel)"
     }
 }
-

@@ -35,7 +35,7 @@ struct AIOrb: View {
             }
             .frame(width: SolodkoTheme.spacing.fourXL * 2.2, height: SolodkoTheme.spacing.fourXL * 2.2)
             .scaleEffect(scale)
-            .opacity(reduceMotion ? reducedMotionOpacity : 1)
+            .opacity(opacity)
             .matchedGeometryEffect(id: "mealCard", in: namespace, isSource: state != .resultReady)
             .contentShape(Circle())
         }
@@ -76,6 +76,11 @@ struct AIOrb: View {
         }
     }
 
+    private var opacity: CGFloat {
+        if state == .resultReady { return reduceMotion ? 0 : 0.08 }
+        return reduceMotion ? reducedMotionOpacity : 1
+    }
+
     private var innerOpacity: CGFloat {
         switch state {
         case .idle: return breath ? 0.72 : 0.52
@@ -99,4 +104,3 @@ struct AIOrb: View {
         }
     }
 }
-
