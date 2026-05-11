@@ -23,6 +23,23 @@ enum SolodkoCopy {
         static let estimatedHint = String(localized: "A soft estimate. Adjust the portion if needed.")
     }
 
+    enum Log {
+        static let today = String(localized: "Today")
+        static let morning = String(localized: "Morning")
+        static let afternoon = String(localized: "Afternoon")
+        static let evening = String(localized: "Evening")
+        static let empty = String(localized: "Logged meals will appear here.")
+    }
+
+    enum Memory {
+        static let usuallyAroundNow = String(localized: "Usually around now")
+        static let recurringMeals = String(localized: "Recurring meals")
+        static let savedFoods = String(localized: "Saved foods")
+        static let recipes = String(localized: "Recipes")
+        static let recentRepeats = String(localized: "Recent repeats")
+        static let empty = String(localized: "Saved foods and recipes will appear here.")
+    }
+
     enum Actions {
         static let logMeal = String(localized: "Log meal")
         static let adjustPortion = String(localized: "Adjust portion")
