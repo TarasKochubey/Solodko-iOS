@@ -21,6 +21,9 @@ enum SolodkoCopy {
         static let clarification = String(localized: "How much?")
         static let offline = String(localized: "Offline - using saved foods")
         static let estimatedHint = String(localized: "A soft estimate. Adjust the portion if needed.")
+        static let barcodeUnavailable = String(localized: "Barcode scanning isn't connected yet. Type your meal instead.")
+        static let cameraUnavailable = String(localized: "Photo input isn't connected yet. Type your meal instead.")
+        static let voiceUnavailable = String(localized: "Voice input isn't connected yet. Type your meal instead.")
     }
 
     enum Log {
@@ -28,7 +31,7 @@ enum SolodkoCopy {
         static let morning = String(localized: "Morning")
         static let afternoon = String(localized: "Afternoon")
         static let evening = String(localized: "Evening")
-        static let empty = String(localized: "Logged meals will appear here.")
+        static let empty = String(localized: "Nothing logged yet today. What are you eating?")
     }
 
     enum Memory {
@@ -37,7 +40,7 @@ enum SolodkoCopy {
         static let savedFoods = String(localized: "Saved foods")
         static let recipes = String(localized: "Recipes")
         static let recentRepeats = String(localized: "Recent repeats")
-        static let empty = String(localized: "Saved foods and recipes will appear here.")
+        static let empty = String(localized: "Your food library is empty. Foods you save will appear here.")
     }
 
     enum Actions {

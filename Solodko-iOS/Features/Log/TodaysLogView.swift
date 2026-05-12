@@ -7,9 +7,9 @@ struct TodaysLogView: View {
 }
 
 struct LogView: View {
+    @Environment(LogStore.self) private var logStore
+    @AppStorage("debug_preview_data_enabled") private var debugPreviewDataEnabled = false
     @Namespace private var namespace
-
-    private let sections = LogMockData.sections
 
     var body: some View {
         NavigationStack {
@@ -24,7 +24,7 @@ struct LogView: View {
                             .lineLimit(nil)
                             .accessibilityAddTraits(.isHeader)
 
-                        if sections.flatMap(\.meals).isEmpty {
+                        if effectiveLog.isEmpty {
                             EmptyState(text: SolodkoCopy.Log.empty)
                         } else {
                             ForEach(sections) { section in
@@ -39,6 +39,28 @@ struct LogView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
         }
+    }
+
+    private var effectiveLog: [LoggedMeal] {
+        debugPreviewDataEnabled ? LogStore.previewTodaysLog : logStore.todaysLog
+    }
+
+    private var sections: [LogDaySection] {
+        let grouped = Dictionary(grouping: effectiveLog) { meal in
+            TimeOfDayProvider().bucket(for: meal.loggedAt)
+        }
+
+        return [
+            LogDaySection(title: SolodkoCopy.Log.morning, meals: displayMeals(from: grouped[.morning])),
+            LogDaySection(title: SolodkoCopy.Log.afternoon, meals: displayMeals(from: grouped[.afternoon])),
+            LogDaySection(title: SolodkoCopy.Log.evening, meals: displayMeals(from: (grouped[.evening] ?? []) + (grouped[.night] ?? [])))
+        ].filter { !$0.meals.isEmpty }
+    }
+
+    private func displayMeals(from meals: [LoggedMeal]?) -> [LogDisplayMeal] {
+        (meals ?? [])
+            .sorted { $0.loggedAt < $1.loggedAt }
+            .map { LogDisplayMeal(time: DateFormatter.solodkoLogTime.string(from: $0.loggedAt), meal: $0.meal) }
     }
 }
 
@@ -95,79 +117,10 @@ private struct LogDisplayMeal: Identifiable {
     var meal: MealObject
 }
 
-private enum LogMockData {
-    static let sections = [
-        LogDaySection(
-            title: SolodkoCopy.Log.morning,
-            meals: [
-                LogDisplayMeal(
-                    time: "08:15",
-                    meal: MealObject(
-                        foodName: "Oatmeal with apple",
-                        carbGrams: 39,
-                        carbGramsPer100g: 18,
-                        kcal: 330,
-                        portion: PortionObject(grams: 220),
-                        source: .fromLibrary
-                    )
-                ),
-                LogDisplayMeal(
-                    time: "10:40",
-                    meal: MealObject(
-                        foodName: "Greek yogurt",
-                        carbGrams: 14,
-                        carbGramsPer100g: 7,
-                        kcal: 150,
-                        portion: PortionObject(grams: 200),
-                        source: .exact
-                    )
-                )
-            ]
-        ),
-        LogDaySection(
-            title: SolodkoCopy.Log.afternoon,
-            meals: [
-                LogDisplayMeal(
-                    time: "13:20",
-                    meal: MealObject(
-                        foodName: "Buckwheat with chicken",
-                        carbGrams: 38,
-                        carbGramsPer100g: 14,
-                        kcal: 430,
-                        portion: PortionObject(grams: 280),
-                        source: .recurring,
-                        inlineSuggestion: SolodkoCopy.Memory.recurringMeals
-                    )
-                )
-            ]
-        ),
-        LogDaySection(
-            title: SolodkoCopy.Log.evening,
-            meals: [
-                LogDisplayMeal(
-                    time: "18:45",
-                    meal: MealObject(
-                        foodName: "Lentil soup",
-                        carbGrams: 32,
-                        carbGramsPer100g: 11,
-                        kcal: 310,
-                        portion: PortionObject(grams: 300),
-                        source: .fromLibrary
-                    )
-                ),
-                LogDisplayMeal(
-                    time: "21:10",
-                    meal: MealObject(
-                        foodName: "Banana kefir smoothie",
-                        carbGrams: 35,
-                        carbGramsPer100g: 15,
-                        kcal: 240,
-                        portion: PortionObject(grams: 240),
-                        source: .aiEstimated,
-                        inlineSuggestion: SolodkoCopy.Home.estimatedHint
-                    )
-                )
-            ]
-        )
-    ]
+private extension DateFormatter {
+    static let solodkoLogTime: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        return formatter
+    }()
 }

@@ -3,7 +3,15 @@ import Foundation
 
 @Observable
 final class LogStore {
-    var todaysLog: [LoggedMeal] = [
+    var todaysLog: [LoggedMeal] = []
+    var isLoading = false
+    var isOfflineMode = false
+
+    func log(_ meal: MealObject) {
+        todaysLog.insert(LoggedMeal(meal: meal), at: 0)
+    }
+
+    static let previewTodaysLog: [LoggedMeal] = [
         LoggedMeal(
             meal: MealObject(
                 foodName: "Oatmeal",
@@ -14,11 +22,4 @@ final class LogStore {
             )
         )
     ]
-    var isLoading = false
-    var isOfflineMode = false
-
-    func log(_ meal: MealObject) {
-        todaysLog.insert(LoggedMeal(meal: meal), at: 0)
-    }
 }
-

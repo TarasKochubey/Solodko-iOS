@@ -1,14 +1,12 @@
 import SwiftUI
 
 struct MemoryHubView: View {
+    @Environment(FoodMemoryStore.self) private var foodMemoryStore
+    @Environment(RecurringMealsStore.self) private var recurringMealsStore
     @Environment(\.timeOfDayProvider) private var provider
+    @AppStorage("debug_preview_data_enabled") private var debugPreviewDataEnabled = false
     @Namespace private var namespace
-
-    private let usuallyAroundNow = MemoryHubMockData.usuallyAroundNow
-    private let recurringMeals = MemoryHubMockData.recurringMeals
-    private let savedFoods = MemoryHubMockData.savedFoods
-    private let recipes = MemoryHubMockData.recipes
-    private let recentRepeats = MemoryHubMockData.recentRepeats
+    var onSettingsTap: () -> Void = {}
 
     var body: some View {
         NavigationStack {
@@ -17,26 +15,34 @@ struct MemoryHubView: View {
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: SolodkoTheme.spacing.threeXL) {
-                        TimeOfDayHeader()
-
-                        MemorySection(title: SolodkoCopy.Memory.usuallyAroundNow) {
-                            memoryMealCards(usuallyAroundNow, state: .recurring)
+                        HStack(alignment: .center) {
+                            TimeOfDayHeader()
+                            Spacer()
+                            SettingsIconButton(onTap: onSettingsTap)
                         }
 
-                        MemorySection(title: SolodkoCopy.Memory.recurringMeals) {
-                            memoryMealCards(recurringMeals, state: .recurring)
-                        }
+                        if memoryIsEmpty {
+                            EmptyState(text: SolodkoCopy.Memory.empty)
+                        } else {
+                            MemorySection(title: SolodkoCopy.Memory.usuallyAroundNow) {
+                                recurringMemoryRows(usuallyAroundNow)
+                            }
 
-                        MemorySection(title: SolodkoCopy.Memory.savedFoods) {
-                            memoryMealCards(savedFoods, state: .fromLibrary)
-                        }
+                            MemorySection(title: SolodkoCopy.Memory.recurringMeals) {
+                                recurringMemoryRows(effectiveRecurringMeals)
+                            }
 
-                        MemorySection(title: SolodkoCopy.Memory.recipes) {
-                            recipeCards
-                        }
+                            MemorySection(title: SolodkoCopy.Memory.savedFoods) {
+                                savedFoodRows(effectiveSavedFoods)
+                            }
 
-                        MemorySection(title: SolodkoCopy.Memory.recentRepeats) {
-                            memoryMealCards(recentRepeats, state: .fromLibrary)
+                            MemorySection(title: SolodkoCopy.Memory.recipes) {
+                                recipeCards
+                            }
+
+                            MemorySection(title: SolodkoCopy.Memory.recentRepeats) {
+                                savedFoodRows(effectiveSavedFoods)
+                            }
                         }
                     }
                     .padding(SolodkoTheme.spacing.xl)
@@ -50,20 +56,33 @@ struct MemoryHubView: View {
     }
 
     @ViewBuilder
-    private func memoryMealCards(_ meals: [MealObject], state: MealCardState) -> some View {
+    private func recurringMemoryRows(_ meals: [RecurringMeal]) -> some View {
         if meals.isEmpty {
             EmptyState(text: SolodkoCopy.Memory.empty)
         } else {
             VStack(spacing: SolodkoTheme.spacing.lg) {
                 ForEach(meals) { meal in
-                    MealCard(
-                        meal: meal,
-                        cardState: state,
-                        namespace: namespace,
-                        onLog: {},
-                        onAdjustPortion: {},
-                        onSaveToMemory: {},
-                        onDismiss: {}
+                    MemoryFoodRow(
+                        title: meal.foodName,
+                        detail: meal.lastPortion.displayText,
+                        carbGrams: meal.carbGrams
+                    )
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func savedFoodRows(_ foods: [SavedFood]) -> some View {
+        if foods.isEmpty {
+            EmptyState(text: SolodkoCopy.Memory.empty)
+        } else {
+            VStack(spacing: SolodkoTheme.spacing.lg) {
+                ForEach(foods) { food in
+                    MemoryFoodRow(
+                        title: food.foodName,
+                        detail: food.usualPortion.displayText,
+                        carbGrams: food.carbGrams
                     )
                 }
             }
@@ -72,15 +91,37 @@ struct MemoryHubView: View {
 
     @ViewBuilder
     private var recipeCards: some View {
-        if recipes.isEmpty {
+        if effectiveRecipes.isEmpty {
             EmptyState(text: SolodkoCopy.Memory.empty)
         } else {
             VStack(spacing: SolodkoTheme.spacing.lg) {
-                ForEach(recipes) { recipe in
+                ForEach(effectiveRecipes) { recipe in
                     MemoryRecipeCard(recipe: recipe)
                 }
             }
         }
+    }
+
+    private var memoryIsEmpty: Bool {
+        effectiveSavedFoods.isEmpty && effectiveRecurringMeals.isEmpty && effectiveRecipes.isEmpty
+    }
+
+    private var effectiveSavedFoods: [SavedFood] {
+        debugPreviewDataEnabled ? FoodMemoryStore.previewSavedFoods : foodMemoryStore.savedFoods
+    }
+
+    private var effectiveRecurringMeals: [RecurringMeal] {
+        debugPreviewDataEnabled ? RecurringMealsStore.previewMeals : recurringMealsStore.meals
+    }
+
+    private var usuallyAroundNow: [RecurringMeal] {
+        let bucket = provider.bucket()
+        let matches = effectiveRecurringMeals.filter { $0.timeOfDayBucket == bucket }
+        return Array(matches.prefix(3))
+    }
+
+    private var effectiveRecipes: [MemoryRecipe] {
+        debugPreviewDataEnabled ? MemoryHubPreviewData.recipes : []
     }
 }
 
@@ -144,6 +185,47 @@ private struct MemoryRecipeCard: View {
     }
 }
 
+private struct MemoryFoodRow: View {
+    var title: String
+    var detail: String
+    var carbGrams: Double
+
+    var body: some View {
+        GlassCard {
+            HStack(alignment: .top, spacing: SolodkoTheme.spacing.md) {
+                VStack(alignment: .leading, spacing: SolodkoTheme.spacing.sm) {
+                    Text(title)
+                        .font(SolodkoTheme.typography.mealName)
+                        .foregroundStyle(SolodkoTheme.colors.text.primary)
+                        .lineLimit(nil)
+
+                    Text(detail)
+                        .font(SolodkoTheme.typography.microcopy)
+                        .foregroundStyle(SolodkoTheme.colors.text.secondary)
+                        .lineLimit(nil)
+                }
+
+                Spacer(minLength: SolodkoTheme.spacing.sm)
+
+                VStack(alignment: .trailing, spacing: SolodkoTheme.spacing.xs) {
+                    Text("\(carbGrams, specifier: "%.0f")g")
+                        .font(SolodkoTheme.typography.screenTitle)
+                        .foregroundStyle(SolodkoTheme.colors.text.primary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+
+                    Text("Carbs")
+                        .font(SolodkoTheme.typography.microcopy)
+                        .foregroundStyle(SolodkoTheme.colors.text.secondary)
+                }
+                .accessibilityLabel("\(carbGrams, specifier: "%.0f") grams of carbohydrates")
+            }
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title), \(carbGrams, specifier: "%.0f") grams of carbohydrates, \(detail)")
+    }
+}
+
 private struct MemoryRecipe: Identifiable {
     let id = UUID()
     var name: String
@@ -151,70 +233,9 @@ private struct MemoryRecipe: Identifiable {
     var carbGrams: Int
 }
 
-private enum MemoryHubMockData {
-    static let usuallyAroundNow = [
-        MealObject(
-            foodName: "Greek yogurt with berries",
-            carbGrams: 26,
-            carbGramsPer100g: 12,
-            kcal: 210,
-            portion: PortionObject(grams: 220),
-            source: .recurring,
-            inlineSuggestion: SolodkoCopy.Memory.usuallyAroundNow
-        )
-    ]
-
-    static let recurringMeals = [
-        MealObject(
-            foodName: "Buckwheat with chicken",
-            carbGrams: 38,
-            carbGramsPer100g: 14,
-            kcal: 430,
-            portion: PortionObject(grams: 280),
-            source: .recurring
-        ),
-        MealObject(
-            foodName: "Toast with cottage cheese",
-            carbGrams: 31,
-            carbGramsPer100g: 22,
-            kcal: 290,
-            portion: PortionObject(grams: 140),
-            source: .recurring
-        )
-    ]
-
-    static let savedFoods = [
-        MealObject(
-            foodName: "Apple and peanut butter",
-            carbGrams: 24,
-            carbGramsPer100g: 14,
-            kcal: 265,
-            portion: PortionObject(grams: 170),
-            source: .fromLibrary
-        ),
-        MealObject(
-            foodName: "Lentil soup",
-            carbGrams: 32,
-            carbGramsPer100g: 11,
-            kcal: 310,
-            portion: PortionObject(grams: 300),
-            source: .fromLibrary
-        )
-    ]
-
+private enum MemoryHubPreviewData {
     static let recipes = [
         MemoryRecipe(name: "Cottage cheese pancakes", portion: "2 pieces", carbGrams: 29),
         MemoryRecipe(name: "Turkey rice bowl", portion: "1 bowl", carbGrams: 46)
-    ]
-
-    static let recentRepeats = [
-        MealObject(
-            foodName: "Banana kefir smoothie",
-            carbGrams: 35,
-            carbGramsPer100g: 15,
-            kcal: 240,
-            portion: PortionObject(grams: 240),
-            source: .fromLibrary
-        )
     ]
 }

@@ -37,6 +37,7 @@ final class MealInputController {
     var clarificationContext: ClarificationContext?
     var activeMealCard: MealObject?
     var isLoggingResult = false
+    var inlineUnavailableMessage: String?
 
     var orbState: OrbState {
         switch status {
@@ -52,6 +53,7 @@ final class MealInputController {
     func beginListening() {
         inputMethod = .text
         status = .listening
+        inlineUnavailableMessage = nil
     }
 
     @MainActor
@@ -98,11 +100,13 @@ final class MealInputController {
     func startVoiceDemo() {
         inputMethod = .voice
         status = .listening
+        inlineUnavailableMessage = nil
     }
 
     @MainActor
     func startPhotoDemo(reduceMotion: Bool) {
         inputMethod = .photo
+        inlineUnavailableMessage = nil
         status = .processing
         Task { @MainActor in
             try? await Task.sleep(for: .seconds(reduceMotion ? 0.15 : 0.75))
@@ -121,6 +125,7 @@ final class MealInputController {
 
     func startBarcodeDemo(reduceMotion: Bool) {
         inputMethod = .barcode
+        inlineUnavailableMessage = nil
         activeMealCard = MealObject(
             foodName: "Packaged kefir",
             carbGrams: 12,
@@ -129,6 +134,14 @@ final class MealInputController {
             source: .exact
         )
         setStatus(.resultReady, reduceMotion: reduceMotion)
+    }
+
+    func showUnavailableInput(_ message: String, method: InputMethod) {
+        inputMethod = method
+        activeMealCard = nil
+        clarificationContext = nil
+        inlineUnavailableMessage = message
+        status = .listening
     }
 
     func useRecurringMeal(_ meal: RecurringMeal) {
@@ -175,6 +188,7 @@ final class MealInputController {
         clarificationContext = nil
         activeMealCard = nil
         isLoggingResult = false
+        inlineUnavailableMessage = nil
     }
 
     private func completeFakeResolution(for text: String, reduceMotion: Bool) {

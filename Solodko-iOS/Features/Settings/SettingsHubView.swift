@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct SettingsHubView: View {
+    @AppStorage("debug_preview_data_enabled") private var debugPreviewDataEnabled = false
+
     var body: some View {
         ZStack {
             AtmosphericBackground()
@@ -13,6 +15,12 @@ struct SettingsHubView: View {
                         .font(SolodkoTheme.typography.body)
                         .foregroundStyle(SolodkoTheme.colors.text.secondary)
                         .lineLimit(nil)
+
+                    Toggle("Preview data", isOn: $debugPreviewDataEnabled)
+                        .font(SolodkoTheme.typography.body)
+                        .foregroundStyle(SolodkoTheme.colors.text.primary)
+                        .frame(minHeight: SolodkoTheme.spacing.minTouchTarget)
+                        .accessibilityHint("Shows sample meals only for development previews")
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -21,4 +29,3 @@ struct SettingsHubView: View {
         .presentationDetents([.medium])
     }
 }
-

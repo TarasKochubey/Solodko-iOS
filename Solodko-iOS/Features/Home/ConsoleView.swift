@@ -4,6 +4,7 @@ struct ConsoleView: View {
     @Bindable var controller: MealInputController
     var namespace: Namespace.ID
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @AppStorage("debug_preview_data_enabled") private var debugPreviewDataEnabled = false
 
     var body: some View {
         VStack(spacing: SolodkoTheme.spacing.sm) {
@@ -25,12 +26,36 @@ struct ConsoleView: View {
                         controller.submitText(text, reduceMotion: reduceMotion)
                     }
                 },
-                onVoiceTap: { controller.startVoiceDemo() },
-                onCameraTap: { controller.startPhotoDemo(reduceMotion: reduceMotion) },
-                onBarcodeTap: { controller.startBarcodeDemo(reduceMotion: reduceMotion) }
+                onVoiceTap: { handleVoiceTap() },
+                onCameraTap: { handleCameraTap() },
+                onBarcodeTap: { handleBarcodeTap() }
             )
             .accessibilitySortPriority(2)
         }
         .padding(.top, SolodkoTheme.spacing.md)
+    }
+
+    private func handleVoiceTap() {
+        if debugPreviewDataEnabled {
+            controller.startVoiceDemo()
+        } else {
+            controller.showUnavailableInput(SolodkoCopy.Home.voiceUnavailable, method: .voice)
+        }
+    }
+
+    private func handleCameraTap() {
+        if debugPreviewDataEnabled {
+            controller.startPhotoDemo(reduceMotion: reduceMotion)
+        } else {
+            controller.showUnavailableInput(SolodkoCopy.Home.cameraUnavailable, method: .photo)
+        }
+    }
+
+    private func handleBarcodeTap() {
+        if debugPreviewDataEnabled {
+            controller.startBarcodeDemo(reduceMotion: reduceMotion)
+        } else {
+            controller.showUnavailableInput(SolodkoCopy.Home.barcodeUnavailable, method: .barcode)
+        }
     }
 }

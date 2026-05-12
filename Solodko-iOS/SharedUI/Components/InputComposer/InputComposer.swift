@@ -19,6 +19,14 @@ struct InputComposer: View {
                     .accessibilityLabel(SolodkoCopy.Home.offline)
             }
 
+            if let inlineUnavailableMessage = controller.inlineUnavailableMessage {
+                Text(inlineUnavailableMessage)
+                    .font(SolodkoTheme.typography.microcopy)
+                    .foregroundStyle(SolodkoTheme.colors.text.secondary)
+                    .lineLimit(nil)
+                    .accessibilityLabel(inlineUnavailableMessage)
+            }
+
             HStack(spacing: SolodkoTheme.spacing.sm) {
                 TextField(SolodkoCopy.Home.textPlaceholder, text: $controller.rawInput)
                     .font(SolodkoTheme.typography.body)
