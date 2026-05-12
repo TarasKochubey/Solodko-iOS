@@ -4,6 +4,8 @@ struct MealResultOverlay: View {
     @Bindable var controller: MealInputController
     var namespace: Namespace.ID
     var onLogged: (MealObject) -> Void
+    var onSaveToMemory: (MealObject) -> Void
+    var onAdjustPortion: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @AccessibilityFocusState private var cardFocused: Bool
@@ -18,8 +20,8 @@ struct MealResultOverlay: View {
                     namespace: namespace,
                     isOverlay: true,
                     onLog: { log(meal) },
-                    onAdjustPortion: {},
-                    onSaveToMemory: {},
+                    onAdjustPortion: onAdjustPortion,
+                    onSaveToMemory: { onSaveToMemory(meal) },
                     onDismiss: { dismiss() }
                 )
                 .scaleEffect(controller.isLoggingResult && !reduceMotion ? 0.95 : 1)
