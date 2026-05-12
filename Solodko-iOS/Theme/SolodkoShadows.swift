@@ -1,10 +1,12 @@
 import SwiftUI
 
 struct SolodkoShadows {
-    let z1Soft = SolodkoShadow(color: .black.opacity(0.04), radius: 32, x: 0, y: 12)
-    let z2Active = SolodkoShadow(color: .black.opacity(0.05), radius: 40, x: 0, y: 20)
-    let secondary = SolodkoShadow(color: .black.opacity(0.03), radius: 12, x: 0, y: 4)
-    let memoryGlow = SolodkoShadow(color: Color(hex: "E2B066").opacity(0.18), radius: 40, x: 0, y: 16)
+    let z1Soft = SolodkoShadow(color: Color(hex: "8A6046").opacity(0.075), radius: 34, x: 0, y: 18)
+    let z2Active = SolodkoShadow(color: Color(hex: "80543C").opacity(0.09), radius: 46, x: 0, y: 24)
+    let secondary = SolodkoShadow(color: Color(hex: "9A6B4D").opacity(0.055), radius: 18, x: 0, y: 8)
+    let memoryGlow = SolodkoShadow(color: Color(hex: "E2B066").opacity(0.18), radius: 44, x: 0, y: 18)
+    let pearlHalo = SolodkoShadow(color: Color(hex: "FFD8BE").opacity(0.36), radius: 52, x: 0, y: 18)
+    let tabBar = SolodkoShadow(color: Color(hex: "8A6046").opacity(0.10), radius: 30, x: 0, y: 14)
 }
 
 struct SolodkoShadow {
@@ -19,4 +21,3 @@ extension View {
         self.shadow(color: shadow.color, radius: shadow.radius, x: shadow.x, y: shadow.y)
     }
 }
-

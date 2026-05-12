@@ -5,7 +5,7 @@ struct ConfidenceGlow: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .shadow(color: state.glowColor, radius: SolodkoTheme.spacing.threeXL, x: SolodkoTheme.spacing.xs - SolodkoTheme.spacing.xs, y: SolodkoTheme.spacing.lg)
+            .shadow(color: state.glowColor, radius: SolodkoTheme.spacing.fourXL, x: 0, y: SolodkoTheme.spacing.lg)
     }
 }
 
@@ -14,4 +14,3 @@ extension View {
         modifier(ConfidenceGlow(state: state))
     }
 }
-

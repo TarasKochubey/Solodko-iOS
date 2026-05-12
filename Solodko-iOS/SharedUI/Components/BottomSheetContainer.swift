@@ -20,6 +20,6 @@ struct BottomSheetContainer<Content: View>: View {
             active: true
         )
         .solodkoShadow(SolodkoTheme.shadows.z2Active)
+        .shadow(color: SolodkoTheme.colors.background.peachLight.opacity(0.22), radius: SolodkoTheme.spacing.fourXL, x: 0, y: SolodkoTheme.spacing.lg)
     }
 }
-

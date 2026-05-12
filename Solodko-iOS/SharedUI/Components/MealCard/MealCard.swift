@@ -39,7 +39,7 @@ struct MealCard: View {
     }
 
     private var fullLayout: some View {
-        VStack(alignment: .leading, spacing: SolodkoTheme.spacing.lg) {
+        VStack(alignment: .leading, spacing: SolodkoTheme.spacing.xl) {
             header
             suggestion
             values
@@ -88,7 +88,7 @@ struct MealCard: View {
     }
 
     private var valueRow: some View {
-        HStack(alignment: .firstTextBaseline, spacing: SolodkoTheme.spacing.xl) {
+        HStack(alignment: .firstTextBaseline, spacing: SolodkoTheme.spacing.twoXL) {
             carbValue
             kcalValue
         }

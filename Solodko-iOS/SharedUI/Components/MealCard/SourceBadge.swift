@@ -11,10 +11,13 @@ struct SourceBadge: View {
                 .lineLimit(nil)
                 .padding(.horizontal, SolodkoTheme.spacing.md)
                 .padding(.vertical, SolodkoTheme.spacing.sm)
-                .background(SolodkoTheme.colors.surface.solidSecondary)
+                .background(SolodkoTheme.colors.surface.solidQuiet)
+                .overlay {
+                    Capsule()
+                        .strokeBorder(Color.white.opacity(0.34), lineWidth: 1)
+                }
                 .clipShape(Capsule())
                 .accessibilityHidden(true)
         }
     }
 }
-

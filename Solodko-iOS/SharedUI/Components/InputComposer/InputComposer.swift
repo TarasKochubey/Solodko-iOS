@@ -46,7 +46,8 @@ struct InputComposer: View {
                 surface: SolodkoTheme.colors.surface.glassActive,
                 active: isActive
             )
-            .solodkoShadow(SolodkoTheme.shadows.secondary)
+            .solodkoShadow(isActive ? SolodkoTheme.shadows.z1Soft : SolodkoTheme.shadows.secondary)
+            .shadow(color: SolodkoTheme.colors.background.peachLight.opacity(isActive ? 0.26 : 0.16), radius: SolodkoTheme.spacing.threeXL, x: 0, y: SolodkoTheme.spacing.md)
             .scaleEffect(isActive && !reduceMotion ? 1.01 : 1)
             .opacity(controller.status == .processing ? 0.82 : 1)
         }

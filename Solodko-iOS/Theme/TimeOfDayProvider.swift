@@ -38,7 +38,7 @@ struct TimeOfDayProvider {
         case .morning: return SolodkoTheme.colors.background.morning
         case .afternoon: return SolodkoTheme.colors.background.afternoon
         case .evening: return SolodkoTheme.colors.background.eveningDusk
-        case .night: return [SolodkoTheme.colors.background.eveningDusk[1], SolodkoTheme.colors.background.eveningDusk[2], SolodkoTheme.colors.background.eveningDusk[0]]
+        case .night: return [SolodkoTheme.colors.background.eveningDusk[1], SolodkoTheme.colors.background.warmPlum, SolodkoTheme.colors.background.ivoryBase]
         }
     }
 }
@@ -53,4 +53,3 @@ extension EnvironmentValues {
         set { self[TimeOfDayProviderKey.self] = newValue }
     }
 }
-

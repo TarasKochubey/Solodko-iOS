@@ -8,18 +8,52 @@ struct AtmosphericBackground: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(
-                colors: provider.gradientColors(for: bucket),
-                startPoint: drift ? .topLeading : .leading,
-                endPoint: drift ? .bottomTrailing : .trailing
+            SolodkoTheme.colors.background.ivoryBase
+                .ignoresSafeArea()
+
+            RadialGradient(
+                colors: [
+                    provider.gradientColors(for: bucket)[0].opacity(0.66),
+                    provider.gradientColors(for: bucket)[1].opacity(0.32),
+                    .clear
+                ],
+                center: drift ? .topLeading : .topTrailing,
+                startRadius: SolodkoTheme.spacing.fourXL,
+                endRadius: SolodkoTheme.spacing.fourXL * 8
             )
             .ignoresSafeArea()
 
             RadialGradient(
-                colors: [SolodkoTheme.colors.surface.glassPrimary, .clear],
-                center: drift ? .topTrailing : .bottomLeading,
+                colors: [
+                    provider.gradientColors(for: bucket)[2].opacity(0.38),
+                    SolodkoTheme.colors.background.ivoryBase.opacity(0.18),
+                    .clear
+                ],
+                center: drift ? .bottomTrailing : .bottomLeading,
                 startRadius: SolodkoTheme.spacing.fourXL,
-                endRadius: SolodkoTheme.spacing.fourXL * 7
+                endRadius: SolodkoTheme.spacing.fourXL * 9
+            )
+            .ignoresSafeArea()
+
+            RadialGradient(
+                colors: [
+                    SolodkoTheme.colors.background.peachGlow.opacity(0.18),
+                    .clear
+                ],
+                center: drift ? .center : .bottom,
+                startRadius: SolodkoTheme.spacing.fourXL,
+                endRadius: SolodkoTheme.spacing.fourXL * 6
+            )
+            .ignoresSafeArea()
+
+            LinearGradient(
+                colors: [
+                    Color.white.opacity(0.28),
+                    SolodkoTheme.colors.background.ivoryBase.opacity(0.10),
+                    Color.white.opacity(0.18)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
             )
             .ignoresSafeArea()
         }
@@ -34,4 +68,3 @@ struct AtmosphericBackground: View {
         }
     }
 }
-

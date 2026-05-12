@@ -16,28 +16,68 @@ struct AIOrb: View {
         }) {
             ZStack {
                 Circle()
-                    .fill(.ultraThinMaterial)
+                    .fill(.thinMaterial)
                 Circle()
-                    .fill(SolodkoTheme.colors.surface.glassActive)
+                    .fill(
+                        RadialGradient(
+                            colors: [
+                                SolodkoTheme.colors.surface.pearl,
+                                SolodkoTheme.colors.surface.glassActive,
+                                SolodkoTheme.colors.surface.glassPrimary
+                            ],
+                            center: .topLeading,
+                            startRadius: SolodkoTheme.spacing.xs,
+                            endRadius: SolodkoTheme.spacing.fourXL * 2
+                        )
+                    )
                 Circle()
                     .fill(
                         RadialGradient(
                             colors: glowColors,
-                            center: .topLeading,
+                            center: .center,
                             startRadius: SolodkoTheme.spacing.xs,
-                            endRadius: SolodkoTheme.spacing.fourXL
+                            endRadius: SolodkoTheme.spacing.fourXL * 1.8
                         )
                     )
                     .rotationEffect(.degrees(rotate ? 360 : 0))
                     .opacity(innerOpacity)
+                    .blur(radius: SolodkoTheme.spacing.xs)
                 Circle()
-                    .strokeBorder(Color.white.opacity(0.58), lineWidth: SolodkoTheme.spacing.xs / 2)
+                    .fill(
+                        RadialGradient(
+                            colors: [
+                                Color.white.opacity(0.72),
+                                Color.white.opacity(0.18),
+                                .clear
+                            ],
+                            center: .topLeading,
+                            startRadius: SolodkoTheme.spacing.xs,
+                            endRadius: SolodkoTheme.spacing.fourXL * 1.5
+                        )
+                    )
+                    .blendMode(.screen)
+                    .opacity(highlightOpacity)
+                Circle()
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.86),
+                                Color.white.opacity(0.26),
+                                Color.white.opacity(0.10)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: SolodkoTheme.spacing.xs / 2
+                    )
             }
             .frame(width: SolodkoTheme.spacing.fourXL * 2.2, height: SolodkoTheme.spacing.fourXL * 2.2)
             .scaleEffect(scale)
             .opacity(opacity)
             .matchedGeometryEffect(id: "mealCard", in: namespace, isSource: state != .resultReady)
             .contentShape(Circle())
+            .shadow(color: haloColor, radius: haloRadius, x: 0, y: SolodkoTheme.spacing.md)
+            .solodkoShadow(SolodkoTheme.shadows.pearlHalo)
         }
         .buttonStyle(.plain)
         .frame(minWidth: SolodkoTheme.spacing.minTouchTarget, minHeight: SolodkoTheme.spacing.minTouchTarget)
@@ -83,11 +123,39 @@ struct AIOrb: View {
 
     private var innerOpacity: CGFloat {
         switch state {
-        case .idle: return breath ? 0.72 : 0.52
-        case .listening, .resultReady: return 0.88
-        case .processing: return 0.76
-        case .clarificationNeeded: return 0.48
-        case .lowConfidence: return 0.42
+        case .idle: return breath ? 0.80 : 0.58
+        case .listening, .resultReady: return 0.92
+        case .processing: return 0.82
+        case .clarificationNeeded: return 0.52
+        case .lowConfidence: return 0.38
+        }
+    }
+
+    private var highlightOpacity: CGFloat {
+        switch state {
+        case .listening, .resultReady: return 0.82
+        case .processing: return 0.68
+        case .lowConfidence: return 0.34
+        default: return breath ? 0.68 : 0.50
+        }
+    }
+
+    private var haloRadius: CGFloat {
+        switch state {
+        case .listening, .processing, .resultReady: return SolodkoTheme.spacing.fourXL
+        case .lowConfidence: return SolodkoTheme.spacing.twoXL
+        default: return SolodkoTheme.spacing.threeXL
+        }
+    }
+
+    private var haloColor: Color {
+        switch state {
+        case .lowConfidence:
+            return SolodkoTheme.colors.confidence.lowConfidence
+        case .processing:
+            return SolodkoTheme.colors.background.peachGlow.opacity(0.26)
+        default:
+            return SolodkoTheme.colors.background.peachLight.opacity(0.34)
         }
     }
 
@@ -96,11 +164,11 @@ struct AIOrb: View {
         case .lowConfidence:
             return [SolodkoTheme.colors.confidence.lowConfidence, .clear]
         case .processing:
-            return [SolodkoTheme.colors.confidence.estimatedGlow, SolodkoTheme.colors.confidence.exactGlow, .clear]
+            return [Color.white.opacity(0.72), SolodkoTheme.colors.background.peachGlow.opacity(0.36), .clear]
         case .clarificationNeeded:
-            return [SolodkoTheme.colors.confidence.memoryGlow, .clear]
+            return [SolodkoTheme.colors.background.peachLight.opacity(0.42), .clear]
         default:
-            return [SolodkoTheme.colors.confidence.exactGlow, .clear]
+            return [Color.white.opacity(0.58), SolodkoTheme.colors.confidence.exactGlow, .clear]
         }
     }
 }

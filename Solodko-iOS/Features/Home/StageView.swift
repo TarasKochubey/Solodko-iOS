@@ -8,11 +8,11 @@ struct StageView: View {
     @State private var loaded = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: SolodkoTheme.spacing.twoXL) {
+        VStack(alignment: .leading, spacing: SolodkoTheme.spacing.threeXL) {
             TimeOfDayHeader()
                 .accessibilitySortPriority(5)
 
-            VStack(alignment: .leading, spacing: SolodkoTheme.spacing.md) {
+            VStack(alignment: .leading, spacing: SolodkoTheme.spacing.lg) {
                 Text(SolodkoCopy.Home.recurringTitle)
                     .font(SolodkoTheme.typography.microcopy)
                     .foregroundStyle(SolodkoTheme.colors.text.secondary)

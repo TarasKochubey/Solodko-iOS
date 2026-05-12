@@ -6,7 +6,7 @@ struct ConsoleView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        VStack(spacing: SolodkoTheme.spacing.md) {
+        VStack(spacing: SolodkoTheme.spacing.sm) {
             AIOrb(state: controller.orbState, onTap: {
                 if controller.status == .idle {
                     withAnimation(reduceMotion ? .easeOut(duration: SolodkoTheme.motion.fast) : .solodkoSpring) {
@@ -31,6 +31,6 @@ struct ConsoleView: View {
             )
             .accessibilitySortPriority(2)
         }
-        .padding(.top, SolodkoTheme.spacing.sm)
+        .padding(.top, SolodkoTheme.spacing.md)
     }
 }
